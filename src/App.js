@@ -1,11 +1,16 @@
 import React, {
   PropTypes,
 } from 'react';
-import Front from './front/Front';
+import { Router, browserHistory } from 'react-router';
+
+// Import Routes
+import routes from './routes';
 
 const App = () => {
   return (
-    <Front />
+    <Router history={browserHistory}>
+      {routes}
+    </Router>
   );
 };
 
