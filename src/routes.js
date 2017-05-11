@@ -6,5 +6,6 @@ import About from './front/About';
 export default (
   <Route path="/" component={Front}>
     <Route path="/about" component={About}/>
+    <Route path="/about/(:id)" component={About}/>
   </Route>
 )
