@@ -4,7 +4,7 @@ import React, {
 
 const Front = () => {
   return (
-    <div>Hello World. </div>
+    <div>Hello World. GG </div>
   );
 };
 
