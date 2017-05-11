@@ -1,10 +1,18 @@
 import React, {
   PropTypes,
 } from 'react';
+import Link from 'react-router/lib/Link';
 
-const Front = () => {
+const Front = ({ children }) => {
   return (
-    <div>Hello World. GG </div>
+    <div>
+      Hello World.
+      <hr/>
+      <Link to="/about">
+        About
+      </Link>
+      {children}
+    </div>
   );
 };
 
