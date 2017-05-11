@@ -1,8 +1,15 @@
 import express from 'express';
-import React from 'react';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
+
+import React from 'react';
+import Helmet from 'react-helmet';
+import { Provider } from 'react-redux';
+import { renderToString } from 'react-dom/server';
+import { match, RouterContext } from 'react-router';
+import { configureStore } from '../src/store';
+import routes from '../src/routes';
 import config from '../webpack.config.dev';
 
 const app = express();
@@ -16,25 +23,66 @@ if(isDeveloping){
   app.use(webpackHotMiddleware(compiler))
 }
 
+// Render Initial HTML
+const renderFullPage = (html, initialState) => {
+  const head = Helmet.rewind();
 
-app.use((req, res) => {
-  const html = `
-  <!DOCTYPE html>
-  <html>
-    <head>
-      <meta charset='utf-8'>
-      <title>Wiki!</title>
-    </head>
-    <body>
-      <div id='root'></div>
-      <script src='bundle.js'></script>
-    </body>
-  </html>
+  return `
+    <!doctype html>
+    <html>
+      <head>
+        ${head.base.toString()}
+        ${head.title.toString()}
+        ${head.meta.toString()}
+        ${head.link.toString()}
+        ${head.script.toString()}
+      </head>
+      <body>
+        <div id="root">${html}</div>
+        <script src='bundle.js'></script>
+      </body>
+    </html>
   `;
+};
 
-  res.end(html)
+const renderError = err => {
+  const softTab = '&#32;&#32;&#32;&#32;';
+  const errTrace = process.env.NODE_ENV !== 'production' ?
+    `:<br><br><pre style="color:red">${softTab}${err.stack.replace(/\n/g, `<br>${softTab}`)}</pre>` : '';
+  return renderFullPage(`Server Error${errTrace}`, {});
+};
+
+// Server Side Rendering based on routes matched by React-router.
+app.use((req, res, next) => {
+  match({ routes, location: req.url }, (err, redirectLocation, renderProps) => {
+    if (err) {
+      return res.status(500).end(renderError(err));
+    }
+
+    if (redirectLocation) {
+      return res.redirect(302, redirectLocation.pathname + redirectLocation.search);
+    }
+
+    if (!renderProps) {
+      return next();
+    }
+
+    const store = configureStore();
+
+    const initialView = renderToString(
+      <Provider store={store}>
+        <RouterContext {...renderProps} />
+      </Provider>
+    );
+
+    const finalState = store.getState();
+
+    res
+      .set('Content-Type', 'text/html')
+      .status(200)
+      .end(renderFullPage(initialView, finalState));
+  });
 });
-
 
 
 app.listen(PORT, (err) => {
