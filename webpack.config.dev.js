@@ -6,26 +6,29 @@ module.exports = {
 
   devtool: 'cheap-module-eval-source-map',
 
-  entry: [
-    'react-hot-loader/patch',
-    // activate HMR for React
+  entry: {
+    app: [
+      'react-hot-loader/patch',
+      // activate HMR for React
 
-    'webpack-hot-middleware/client',
-    // bundle the client for webpack-dev-server
-    // and connect to the provided endpoint
+      'webpack-hot-middleware/client',
+      // bundle the client for webpack-dev-server
+      // and connect to the provided endpoint
 
-    'webpack/hot/only-dev-server',
-    // bundle the client for hot reloading
-    // only- means to only hot reload for successful updates
+      'webpack/hot/only-dev-server',
+      // bundle the client for hot reloading
+      // only- means to only hot reload for successful updates
 
-    './client.js'
-    // the entry point of our app
-  ],
+      './client.js'
+      // the entry point of our app
+    ],
+    vendor: ['react','react-dom'],
+  },
   output: {
-    filename: 'bundle.js',
+    filename: '[name].js',
     // the output bundle
 
-    path: resolve(__dirname, 'build'),
+    path: resolve(__dirname, 'dist'),
 
     publicPath: '/',
     // necessary for HMR to know where to load the hot update chunks
@@ -37,7 +40,11 @@ module.exports = {
         test: /\.jsx?$/,
         use: [ 'babel-loader', ],
         exclude: /node_modules/
-      }
+      },
+      {
+        test: /\.json$/,
+        loader: 'json-loader',
+      },
     ],
   },
 

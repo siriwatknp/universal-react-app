@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import webpack from 'webpack';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import webpackHotMiddleware from 'webpack-hot-middleware';
@@ -23,9 +24,16 @@ if(isDeveloping){
   app.use(webpackHotMiddleware(compiler))
 }
 
+// Apply body Parser and server public assets and routes
+app.use(express.static(path.resolve(__dirname, '../dist')));
+
 // Render Initial HTML
 const renderFullPage = (html, initialState) => {
   const head = Helmet.rewind();
+
+  // Import Manifests
+  const assetsManifest = process.env.webpackAssets && JSON.parse(process.env.webpackAssets);
+  const chunkManifest = process.env.webpackChunkAssets && JSON.parse(process.env.webpackChunkAssets);
 
   return `
     <!doctype html>
@@ -36,6 +44,8 @@ const renderFullPage = (html, initialState) => {
         ${head.meta.toString()}
         ${head.link.toString()}
         ${head.script.toString()}
+        
+       
       </head>
       <body>
       
@@ -59,7 +69,16 @@ const renderFullPage = (html, initialState) => {
       </script>
       
         <div id="root">${html}</div>
-        <script src='bundle.js'></script>
+        
+        <script>
+          window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
+          ${process.env.NODE_ENV === 'production' ?
+          `//<![CDATA[
+          window.webpackManifest = ${JSON.stringify(chunkManifest)};
+          //]]>` : ''}
+        </script>
+        <script src='${process.env.NODE_ENV === 'production' ? assetsManifest['/vendor.js'] : '/vendor.js'}'></script>
+        <script src='${process.env.NODE_ENV === 'production' ? assetsManifest['/app.js'] : '/app.js'}'></script>
       </body>
     </html>
   `;
@@ -97,10 +116,7 @@ app.use((req, res, next) => {
 
     const finalState = store.getState();
 
-    res
-      .set('Content-Type', 'text/html')
-      .status(200)
-      .end(renderFullPage(initialView, finalState));
+    return res.end(renderFullPage(initialView, finalState));
   });
 });
 
@@ -113,3 +129,5 @@ app.listen(PORT, (err) => {
   console.log('Press Ctrl+C to quit.');
 });
 // [END app]
+
+export default app;
