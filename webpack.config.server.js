@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: path.resolve(__dirname, 'server/server.js'),
@@ -14,6 +13,7 @@ module.exports = {
 
   target: 'node', // in order to ignore built-in modules like path, fs, etc.
 
+  // dont forget to add this, otherwise path is empty in server
   node: {
     __filename: true,
     __dirname: true
@@ -42,8 +42,4 @@ module.exports = {
       },
     ],
   },
-
-  plugins: [
-    new ExtractTextPlugin({ filename: 'css/app.css', disable: false, allChunks: true }),
-  ]
 };
