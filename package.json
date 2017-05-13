@@ -5,16 +5,17 @@
   "main": "index.js",
   "scripts": {
     "start": "if-env NODE_ENV=production && npm run bs || npm run start:dev",
-    "start:dev": "cross-env node index.js",
+    "start:dev": "cross-env BABEL_ENV=server node index.js",
     "bs": "npm run clean && npm run build && npm run build:server && npm run start:prod",
     "clean": "rimraf dist",
     "build": "cross-env NODE_ENV=production webpack --config webpack.config.prod.js",
-    "build:server": "cross-env NODE_ENV=production webpack --config webpack.config.server.js",
+    "build:server": "cross-env BABEL_ENV=server NODE_ENV=production webpack --config webpack.config.server.js",
     "start:prod": "cross-env NODE_ENV=production node index.js"
   },
   "dependencies": {
     "babel-core": "^6.24.1",
     "babel-loader": "^7.0.0",
+    "babel-plugin-css-modules-transform": "^1.2.7",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "chunk-manifest-webpack-plugin": "^1.1.0",

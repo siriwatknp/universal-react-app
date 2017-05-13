@@ -2,6 +2,7 @@ import React, {
   PropTypes,
 } from 'react';
 import { Helmet } from 'react-helmet';
+import styles from './About.css';
 
 const About = ({ params: { id }}) => {
   return (
@@ -14,7 +15,7 @@ const About = ({ params: { id }}) => {
         <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/assez-9815e.appspot.com/o/staging%2Fcostumes%2FImage-Web9.2.jpg?alt=media&token=0e3200df-201e-4eab-adf7-333434ff8872" />
 
       </Helmet>
-      This is about page.
+      <h3 className="about">This is about page.</h3>
       <div className="fb-share-button"
            data-href="https://react-app-ce8ba.appspot.com/about"
            data-layout="button_count">

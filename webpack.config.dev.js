@@ -4,7 +4,7 @@ const webpack = require('webpack');
 module.exports = {
   context: resolve(__dirname, 'src'),
 
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'cheap-module-source-map',
 
   entry: {
     app: [
@@ -38,8 +38,51 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        use: [ 'babel-loader', ],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              babelrc: false,
+              presets:[
+                ["es2015", {"modules": false}],
+                // webpack understands the native import syntax, and uses it for tree shaking
+
+                "react"
+                // Transpile React components to JavaScript
+              ],
+              plugins: [
+                "react-hot-loader/babel",
+                // Enables React code to work with HMR.
+              ]
+            }
+          }
+        ],
         exclude: /node_modules/
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader','css-loader']
+      },
+      {
+        test: /\.scss$/,
+        use: [
+          { loader: 'style-loader' },
+          {
+            loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              modules: true,
+              importLoaders: 1,
+              localIdentName: '[local]_[hash:base64:3]',
+            }
+          },
+          {
+            loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+            }
+          }
+        ]
       },
       {
         test: /\.json$/,
