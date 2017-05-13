@@ -3,6 +3,7 @@ import React, {
 } from 'react';
 import Link from 'react-router/lib/Link';
 import { Helmet } from 'react-helmet';
+import styles from './Front.scss';
 
 const Front = ({ children }) => {
   return (
@@ -15,7 +16,7 @@ const Front = ({ children }) => {
         <meta property="og:image" content="https://firebasestorage.googleapis.com/v0/b/assez-9815e.appspot.com/o/undefined%2Fundefined%2FHome2.jpg?alt=media&token=d563c7ae-54a6-4315-b5ad-6538da888a83" />
 
       </Helmet>
-      <h1>Hello World.</h1>
+      <h1 className={styles.test}>Hello World....</h1>
       <div className="fb-share-button"
            data-href="https://react-app-ce8ba.appspot.com/"
            data-layout="button_count">

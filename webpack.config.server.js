@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const webpack = require('webpack');
 const nodeExternals = require('webpack-node-externals');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
   entry: path.resolve(__dirname, 'server/server.js'),
@@ -32,24 +33,17 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        use: [
-          {
-            loader: 'babel-loader',
-            query: {
-              babelrc: false,
-              presets: [
-                'react',
-                'es2015',
-              ],
-            },
-          }
-        ],
+        use: ['babel-loader'],
         exclude: /node_modules/,
-      }, {
+      },
+      {
         test: /\.json$/,
         loader: 'json-loader',
       },
     ],
   },
 
+  plugins: [
+    new ExtractTextPlugin({ filename: 'css/app.css', disable: false, allChunks: true }),
+  ]
 };
